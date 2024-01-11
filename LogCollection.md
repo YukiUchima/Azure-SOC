@@ -103,18 +103,256 @@ Microsoft-Windows-Windows Firewall With Advanced Security/Firewall!*[System[(Eve
 <br>
 <br>
 
-# Tenant-Level Monitoring/Logging
+## Tenant-Level Monitoring/Logging
 
 - Keep track of sign-in activity
 - Audit trail of changes made in Azure AD for particular tenant
 
-## Azure Active Directory Logging (in progress)
+### Azure Active Directory Logging (in progress)
 
-<!-- - Microsoft Entra ID
+- Microsoft Entra ID
 
-        Create and configure collection of Audit and SignIn logs
+```
+Create and configure collection of Audit and SignIn logs
 
-        Diagnostic setting name set to "ds-audit-signIn"
+Diagnostic setting name set to "ds-audit-signIn"
+```
 
-  <img src="./assets/img/MSentraID.png"/>
-  <img src="./assets/img/MSentraID2.png"/> -->
+<img src="./assets/img/MSentraID.png"/>
+<img src="./assets/img/MSentraID2.png"/>
+
+        Verified Log Tables exist
+
+<img src="./assets/img/MSentraID3.png"/>
+
+        Although no results populates in query, table exists
+
+<img src="./assets/img/MSentraID4.png"/>
+
+<br>
+<br>
+<br>
+
+### Show Logs in MS Entra ID (Azure Active Directory)
+
+- Create new dummer user
+- Sign in with dummy user
+- Assign role of Global Administrator
+- Delete dummy_user
+- Observe Audit logs in Log Analytics Workspace of previous actions
+
+<img src="./assets/img/MSentraID5.png"/>
+<img src="./assets/img/MSentraID6.png"/>
+
+### KQL querying when Global Administrator has been initiated
+
+        Note: "project" is limiting the columns to specific headers to be displayed to reduce noise of unnecessary information
+
+```
+
+AuditLogs
+| where OperationName like "add member to role" and Result like "success"
+| where TargetResources[0].modifiedProperties[1].newValue like "Global Administrator" or TargetResources[0].modifiedProperties[1].newValue like "company administrator"
+| order by TimeGenerated desc
+| project TimeGenerated, OperationName, AssignedRole = TargetResources[0].modifiedProperties[1].newValue, Status = Result
+
+```
+
+<img src="./assets/img/MSentraID7.png"/>
+
+### Attacker - generate logs simulating brute force attacks
+
+- New user "attack-user"
+- Simulate attempts to log in through azure directory
+
+<img src="./assets/img/MSentraID8.png"/>
+
+<br>
+<br>
+<br>
+<br>
+
+## Subsrciption-Level Monitoring/Logging (Activity Log)
+
+- Enabling activity log, including logs for:
+
+  - changing RG
+  - creating RG
+  - deleting RG
+
+```
+From Azure portal, open "Monitor"
+Open "Activity Log" then "Export Activity Logs"
+```
+
+<img src="./assets/img/subscriptionLevel.png"/>
+
+```
+Add new diagnostic settings
+```
+
+<img src="./assets/img/subscriptionLevel2.png"/>
+
+```
+Confirmed new settings are added for AzureActivity logs
+```
+
+<img src="./assets/img/subscriptionLevel3.png"/>
+
+### Creating new resource groups
+
+- "Scratch-Resource-Group"
+- "Critical-Infrastructure-Wastewater"
+
+<img src="./assets/img/subscriptionLevel4.png"/>
+
+```
+Verified in AzureActivity, logs are created for creationg of groups
+Next, deleting previous groups created
+```
+
+<img src="./assets/img/subscriptionLevel5.png"/>
+
+```
+Both subscriptions have been successfully deleted with logs below indicating when they were created
+
+```
+
+<img src="./assets/img/subscriptionLevel6.png"/>
+
+<br>
+<br>
+<br>
+<br>
+
+## Resource-Level Logging (Diagnostic Setting)
+
+- Enabling Resource-level (Data-Plane) logging into Log Analytics Workspace for:
+  - Storage
+  - Key Vault
+
+### Storage Accounts Logging
+
+```
+Configure Logging for Azure Storage
+    Storage Accounts
+        Diagnostic Settings Configuration
+            Blob -> Essentially uploading files (txt)
+
+
+```
+
+<img src="./assets/img/dataPlane.png"/>
+<img src="./assets/img/dataPlane2.png"/>
+
+```
+Test blob text file
+    - Storage Account
+        - Containers (inside storage account)
+            - New Container ("test")
+                - Upload text file that was created
+
+```
+
+<img src="./assets/img/dataPlane3.png"/>
+
+```
+Upload blob sample text file to be logged
+```
+
+<img src="./assets/img/dataPlane4.png"/>
+
+#### Review Blob Collections Data in Log Analytics
+
+<img src="./assets/img/dataPlane5.png"/>
+
+- Table name is "StorageBlobLogs"
+- Queried and found log of when file was uploaded
+
+<img src="./assets/img/dataPlane6.png"/>
+
+```
+Deleting blob container, and then observing log of deletion
+```
+
+<img src="./assets/img/dataPlane6.png"/>
+<img src="./assets/img/dataPlane7.png"/>
+<img src="./assets/img/dataPlane8.png"/>
+
+### Creating Key Vault and Logging it
+
+- Create Key Vault
+- Create Secret to store in Key Vault
+- Log secret to Analytics Workspace when users access it
+
+<img src="./assets/img/keyVault2.png">
+
+<img src="./assets/img/keyVault.png"/>
+
+```
+Create key vault
+
+```
+
+<img src="./assets/img/keyVault3.png"/>
+
+```
+Stored secret inside key vault
+```
+
+<img src="./assets/img/keyVault4.png"/>
+
+```
+Setting up diagnostics settings for secret to be logged
+    - From inside Key Vaults, go to Diagnostic Settings to create a new setting
+```
+
+<img src="./assets/img/keyVault6.png"/>
+
+#### Observing Key Vault Logs
+
+```
+Key Vault Test Logs
+// List out Secrets
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+| where OperationName == "SecretList"
+
+// Attempt to view passwords that don't exist
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+| where OperationName == "SecretGet"
+| where ResultSignature == "Not Found"
+
+// Viewing an actual existing password
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+| where OperationName == "SecretGet"
+| where ResultSignature == "OK"
+
+// Viewing a specific existing password
+let CRITICAL_PASSWORD_NAME = "Tenant-Global-Admin-Password";
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+| where OperationName == "SecretGet"
+| where id_s contains CRITICAL_PASSWORD_NAME
+
+// Updating a password Success
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+| where OperationName == "SecretSet"
+
+// Updating a specific existing password Success
+let CRITICAL_PASSWORD_NAME = "Tenant-Global-Admin-Password";
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+| where OperationName == "SecretSet"
+| where id_s endswith CRITICAL_PASSWORD_NAME
+| where TimeGenerated > ago(2h)
+
+// Failed access attempts
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+| where ResultSignature == "Unauthorized" -->
+
+```
