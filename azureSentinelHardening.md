@@ -1,94 +1,121 @@
 <link href="./style.css" rel="stylesheet"></link>
 
-# Azure Sentinel (Post-hardening)
+# Securing Cloud
 
-1. Step 2 Detection and Analysis
-2. Containment, Eradication, Recovery
-   - [Reference Playbook](./assets/data/Incident%20Management%20Playbook.pdf)
+    1. Inspect MDC Secure Score
+    2. Inspect MDC Recommendations
+    3. Enable MDC Regulatory Compliance
+        - NIST 800-53 (Security and Privacy Controls)
 
-## Incident Response - Malware (Simulated)
+### Microsoft Defender For Cloud Secure Score
 
-    - Review Malware Incident
-    - Refer to playbook
+    Current Score at 50%
 
-<img src="./assets/img/hardeningMW1.png"/>
+<img src="./assets/img/MDC1.png" />
 
-    Review KQL details, looks like resolved automatically by windows defender. Not much action required but to investigate
+### MDC Recommendations
 
-    According to playbook, if infected and other systems on network impacted, would require quarantine and restoration by clean install or system image
+    Reviewing Recommendations
 
-<img src="./assets/img/hardeningMW.png"/>
+<img src="./assets/img/MDC2.png" />
 
-    Determined "EICAR" files and can be closed as it is used for testing malware triggers
+<br>
+<br>
 
-    "Benign Positive"
+### MDC Regulatory Compliance Enabled
 
-<img src="./assets/img/hardeningMW2.png"/>
+    In regulatory compliance, proceed to manage compliance policies
+
+<img src="./assets/img/MDC3.png" />
+
+    Inside Azure Subscription, proceed to security policies and search for 800-53
+
+<img src="./assets/img/MDC4.png" />
+<img src="./assets/img/MDC5.png" />
+
+    Enable NIST 800-53 security policy
+
+<img src="./assets/img/MDC6.png" />
+
+    Confirmed NIST 800-53 has been applied
+
+<img src="./assets/img/MDCnist.png" />
 
 <br>
 <br>
 <br>
 <br>
 
-## Incident Response - Brute Force Successful
+### Securing key vault with private endpoint connection
 
-### Step 1 - Detection and Analysis
+- Creating private endpoint will result to private address when accessing from VM (IP: 10.0.0.#)
+- This is more secure since it can only be accessed with same virtual network and not from the public
 
-    - Taking a look at simulated brute force attack where I used attacker VM in order to create incident alert
+<br>
 
-#### Set Severity, Status, Owner
+    With the key vault, proceed to networking and disable public access
 
-    Review and take ownership of indicent then review full details
+<img src="./assets/img/MDCnistKeyVault.png" />
 
-<img src="./assets/img/hardening1.png"/>
+    In Private Endpoint Connections tabe, create a new private endpoint "PE-AKV"
 
-    This instance, it was me testing this alert by simulating a brute force.
-    Entities include my ip and account associated with this incident using ATTACK VM
+<img src="./assets/img/MDCnistKeyVault1.png" />
 
-<img src="./assets/img/hardening2.png"/>
+    Fill information corresponding to subscription and resource group
 
-#### Investigate incident
+<img src="./assets/img/MDCnistKeyVault2.png" />
+<img src="./assets/img/MDCnistKeyVault3.png" />
+<img src="./assets/img/MDCnistKeyVault4.png" />
+<img src="./assets/img/MDCnistKeyVault5.png" />
 
-    Investigations shows incidents related to the user committing them
+<br>
+<br>
+<br>
+<br>
 
-<img src="./assets/img/hardening3.png"/>
+### Securing Blob storage with private endpoint connection
 
-#### Determine true positive
+- Similar to previous securing of key vault, create private endpoint to the storage in the resource group
 
-    In this instance, simulation is "true" positive, but let's close out ticket as it is not an actual incident, but a simulation
+<br>
 
-<img src="./assets/img/hardening4.png"/>
+    In storage accounts, procced to disable public network access in the networking tab
 
-#### Containment, Eradication, Recovery
+<img src="./assets/img/MDCstorage.png" />
 
-```
-Incident Description
-    This incident involves observation of potential brute force success against Azure Active Directory
+    Proceed to create a private endpoint for the storage account
 
+<img src="./assets/img/MDCstorage1.png" />
+<img src="./assets/img/MDCstorage2.png" />
+<img src="./assets/img/MDCstorage3.png" />
+<img src="./assets/img/MDCstorage4.png" />
+<img src="./assets/img/MDCstorage5.png" />
+<img src="./assets/img/MDCstorage6.png" />
 
-Initial Response Actions
-    Verify the authenticity of the alert or report.
-    Immediately identify and Revoke Sessions/Access for affected user
-    Identify the origin of the attacker and determine if they are attacking or involved with anything else
-    Assess the potential impact of the incident.
-    What type of account was it?
-    What Roles did it have?
-    How long has it been since the breach went unattended?
+### Verify endpoints are created in topology
 
+    Inside Network Watcher, select topology and filter scope to corresponding resource group and locations
 
-Containment and Recovery
-    Lock down the NSG assigned to that VM/Subnet, either entirely, or to allow only necessary traffic
-    Reset the affected user’s password and Roles if applicable
-    Enable MFA
-    Consider preventing any logins from outside the US with Conditional Access
+    Resource Group: RG-Cyber-Lab
+    Locations: East US 2
 
-Document Findings and Close out Incident
+<img src="./assets/img/MDCnetworkWatcher.png" />
 
-```
+<br>
+<br>
+<br>
+<br>
 
-    Locking Down NSG
-    Deleted Previous "DANGER..." rule and hardened security by only allowing my IP address to access VM
+### Creating subnet on virtual network
 
-    Continued to apply to other VM's
+    Add new network security group for subnet
 
-<img src="./assets/img/hardeningWindowsVM.png"/>
+<img src="./assets/img/MDCnsg.png" />
+
+    In the appropriate virtual network, Lab-VNet for this instance, add new subnet (nsg-subnet)
+
+<img src="./assets/img/MDCnsg1.png" />
+
+    Inside network watcher topology, observe subnet has been added and ready to be configured
+
+<img src="./assets/img/MDCnsg2.png" />

@@ -73,3 +73,5 @@ All four workbooks created to log IP address locations
 ```
 
 <img src="./assets/img/sentinel7Workbooks.png"/>
+
+> Next: [Azure Sentinel in Workspace Pt2](/azureSentinelHardening.md)

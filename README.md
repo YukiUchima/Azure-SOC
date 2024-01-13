@@ -7,6 +7,13 @@
 <br>
 <br>
 
+- [Azure Lab](/azureLab.md) :
+
+        Lab setting up virtual machines and initial firewalls to allow all traffic for testing.
+
+<br>
+<br>
+
 - [Azure Cloud MS Defender](/cloudMSDefender.md) :
 
         Setup MS Defender for Cloud analytics workspace
@@ -14,9 +21,18 @@
 <br>
 <br>
 
-- [Azure Lab](/azureLab.md) :
+- [Creating Log Collectors](/LogCollection.md)
 
-        Lab setting up virtual machines and initial firewalls to allow all traffic for testing.
+        Includes set up of flow logs, collection rules
+
+        Tenant Level Monitoring
+
+<br>
+<br>
+
+- [Cloud SOC - Review SIEM](/azureSentinelAlerts.md)
+
+        Includes simulated malware attacks, firewall changes, and brute forced logins on virtual machines
 
 <br>
 <br>
@@ -30,27 +46,9 @@
 <br>
 <br>
 
-- [Azure Sentinel in Workspace Pt2](/azureSentinelHardening.md) :
+- [Azure Sentinel in Workspace Pt2](/azureSentinelHardening.md)
 
-        Display next 24 hours AFTER hardening
-
-        Incident Response Playbook
-
-<br>
-<br>
-
-- [Cloud SOC - Review SIEM](/azureSentinelAlerts.md)
-
-        Includes simulated malware attacks, firewall changes, and brute forced logins on virtual machines
-
-<br>
-<br>
-
-- [Creating Log Collectors](/LogCollection.md)
-
-        Includes set up of flow logs, collection rules
-
-        Tenant Level Monitoring
+        Creating private endpoints to secure key vault and storage
 
 <br>
 <br>

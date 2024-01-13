@@ -31,3 +31,5 @@
 
 <img src="./assets/img/cloudDe8.png"/>
 <img src="./assets/img/cloudDe9.png"/>
+
+> Next: [Cloud SOC - Review SIEM](/azureSentinelAlerts.md)

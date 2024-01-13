@@ -172,7 +172,7 @@ AuditLogs
 <br>
 <br>
 
-## Subsrciption-Level Monitoring/Logging (Activity Log)
+## Subscription-Level Monitoring/Logging (Activity Log)
 
 - Enabling activity log, including logs for:
 
@@ -356,3 +356,5 @@ AzureDiagnostics
 | where ResultSignature == "Unauthorized" -->
 
 ```
+
+> Next: [Cloud SOC - Review SIEM](/azureSentinelAlerts.md)

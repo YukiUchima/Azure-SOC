@@ -108,3 +108,5 @@ auditpol /set /subcategory:"application generated" /success:enable /failure:enab
 ![](./assets/img/attackEventsLX2.png)
 ![](./assets/img/attackEventsLX3.png)
 ![](./assets/img/attackEventsLX4.png)
+
+> Next: [Azure Cloud MS Defender](/cloudMSDefender.md)

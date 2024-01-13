@@ -13,7 +13,7 @@
 
 ## ALERTS
 
-### First, observed log showing FailureCount exceeding beyond 10 attempts (ex. 1037 attempts in previous 24 hours)
+### Log showing FailureCount exceeding beyond 10 attempts (ex. 1037 attempts in previous 24 hours)
 
 ```
 KQL:
@@ -219,3 +219,5 @@ while ($count -lt $TOTAL_VIRUSES_TO_MAKE) {
     Alert generated for excessive password resets
 
 <img src="./assets/img/alertSimPW2.png"/>
+
+> Next: [Azure Sentinel in Workspace Pt1](/azureSentinel.md) :

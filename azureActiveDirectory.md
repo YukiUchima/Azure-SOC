@@ -144,3 +144,5 @@
     Guga982085
 
     cyberlab123! -->
+
+> Next: [Azure Lab](/azureLab.md)
